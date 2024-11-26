@@ -62,13 +62,13 @@ if (
     localStorage.setItem("aiTopic", "blank");
     window.location = "../pages/createQuiz.html";
   }
-
-  document.getElementById("cancelAiQue").addEventListener("click", function () {
-    aiOverlay.classList.add("hide");
-    localStorage.setItem("aiTopic", "blank");
-    window.location = "../pages/createQuiz.html";
-  });
 }
+
+document.getElementById("cancelAiQue").addEventListener("click", function () {
+  aiOverlay.classList.add("hide");
+  localStorage.setItem("aiTopic", "blank");
+  window.location = "../pages/createQuiz.html";
+});
 
 // -------------------------------------------------------------------------------------------
 
