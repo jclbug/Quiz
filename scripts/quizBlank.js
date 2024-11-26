@@ -368,7 +368,7 @@ hostQuiz.addEventListener("click", function () {
 
   if (isHostEdit == "false") {
     localStorage.setItem("user", "host");
-    window.location = "/pages/lobby.html";
+    window.location = "./pages/lobby.html";
   } else if (isHostEdit == "true") {
     // loaderBox.classList.remove("hide");
     localStorage.setItem("isHostEdit", "false");
