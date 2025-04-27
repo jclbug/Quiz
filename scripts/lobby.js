@@ -299,19 +299,19 @@ joinedPlayerBox.addEventListener("click", function (e) {
 const kickYes = document.getElementById("kickYes");
 
 kickYes.addEventListener("click", function () {
-    // Remove player from the lobby UI
+    // Remove the player from the host's UI
     removePlayer(kickOutId);
-
+    
     // Remove the player from the joinedPlayers list
     delete joinedPlayers[kickOutId];
-
-    // Send the "GET_OUT" request ONLY to the kicked-out player
+    
+    // Send the "GET_OUT" request specifically to the kicked player
     playerControls.room.sendToPeer("GET_OUT", kickOutId);
 
-    // Update other players with the current player details
+    // Notify all other players of the updated player list
     playerControls.sendPlayerDetails(joinedPlayers);
 
-    // Reset kickOutId and hide the message box
+    // Reset the kickOutId and hide the confirmation box
     kickOutId = null;
     hostKickoutMsg.classList.add("hide");
     playerExitMsg.classList.add("hide");
@@ -868,43 +868,86 @@ async function joinLobbyPanda(joiningCode) {
     const [sendRequest, getRequest] = room.makeAction("request");
 
     getRequest((req, peerId) => {
-        switch (req.split("%%")[0]) {
-            case "WHO_ARE_YOU":
-                hostId = peerId;
-                sendPlayerDetails(joinedPlayers[selfId], peerId);
-                break;
-            case "GET_OUT":
-                room.leave();
+    switch (req.split("%%")[0]) {
+        case "WHO_ARE_YOU":
+            hostId = peerId;
+            sendPlayerDetails(joinedPlayers[selfId], peerId);
+            break;
+        case "GET_OUT":
+            // Handle the removal of the player when receiving the "GET_OUT" request
+            if (peerId === hostId) {
+                // Leave the room and redirect the player to the join room page
+                playerControls.room.leave();
                 window.location = "../pages/joinRoom.html";
-                break;
-            case "HI":
-                hostId = peerId;
-                console.log("Connected to Host");
-                break;
-            case "BYE_BYE":
-                window.location = "../index.html";
-                break;
-            case "QUIZ_TIME":
-                quizTime = Number.parseInt(req.split("%%")[1]);
-                const questionData = req.split("%%")[2];
-                queObj = JSON.parse(questionData);
-                playersSynced(
-                    Math.ceil((quizTime - new Date().getTime()) / 1000)
-                );
-                setRankAndScore(
-                    joinedPlayers[selfId].rank,
-                    joinedPlayers[selfId].score
-                );
-                break;
-            case "SYNC_DATA":
-                const data = JSON.parse(req.split("%%")[1]);
-                console.log(data);
-                localStorage.setItem("noOfQue", data["noOfQue"]);
-                localStorage.setItem("oneQueTime", data["oneQueTime"]);
-                localStorage.setItem("timeBtwQue", data["timeBtwQue"]);
-                break;
-        }
-    });
+            }
+            break;
+        case "HI":
+            hostId = peerId;
+            console.log("Connected to Host");
+            break;
+        case "BYE_BYE":
+            window.location = "../index.html";
+            break;
+        case "QUIZ_TIME":
+            quizTime = Number.parseInt(req.split("%%")[1]);
+            const questionData = req.split("%%")[2];
+            queObj = JSON.parse(questionData);
+            playersSynced(
+                Math.ceil((quizTime - new Date().getTime()) / 1000)
+            );
+            setRankAndScore(
+                joinedPlayers[selfId].rank,
+                joinedPlayers[selfId].score
+            );
+            break;
+        case "SYNC_DATA":
+            const data = JSON.parse(req.split("%%")[1]);
+            console.log(data);
+            localStorage.setItem("noOfQue", data["noOfQue"]);
+            localStorage.setItem("oneQueTime", data["oneQueTime"]);
+            localStorage.setItem("timeBtwQue", data["timeBtwQue"]);
+            break;
+    }
+});
+    
+    // getRequest((req, peerId) => {
+    //     switch (req.split("%%")[0]) {
+    //         case "WHO_ARE_YOU":
+    //             hostId = peerId;
+    //             sendPlayerDetails(joinedPlayers[selfId], peerId);
+    //             break;
+    //         case "GET_OUT":
+    //             room.leave();
+    //             window.location = "../pages/joinRoom.html";
+    //             break;
+    //         case "HI":
+    //             hostId = peerId;
+    //             console.log("Connected to Host");
+    //             break;
+    //         case "BYE_BYE":
+    //             window.location = "../index.html";
+    //             break;
+    //         case "QUIZ_TIME":
+    //             quizTime = Number.parseInt(req.split("%%")[1]);
+    //             const questionData = req.split("%%")[2];
+    //             queObj = JSON.parse(questionData);
+    //             playersSynced(
+    //                 Math.ceil((quizTime - new Date().getTime()) / 1000)
+    //             );
+    //             setRankAndScore(
+    //                 joinedPlayers[selfId].rank,
+    //                 joinedPlayers[selfId].score
+    //             );
+    //             break;
+    //         case "SYNC_DATA":
+    //             const data = JSON.parse(req.split("%%")[1]);
+    //             console.log(data);
+    //             localStorage.setItem("noOfQue", data["noOfQue"]);
+    //             localStorage.setItem("oneQueTime", data["oneQueTime"]);
+    //             localStorage.setItem("timeBtwQue", data["timeBtwQue"]);
+    //             break;
+    //     }
+    // });
 
     getPlayerDetails((updatedPlayerDetails, peerId) => {
         console.log("Updated: ", updatedPlayerDetails);
