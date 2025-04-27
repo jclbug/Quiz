@@ -298,34 +298,17 @@ joinedPlayerBox.addEventListener("click", function (e) {
 // if click on yes then it remove the player and hide the message box
 const kickYes = document.getElementById("kickYes");
 
+
+
 kickYes.addEventListener("click", function () {
-    // Remove the player from the host's UI
     removePlayer(kickOutId);
-    
-    // Remove the player from the joinedPlayers list
     delete joinedPlayers[kickOutId];
-    
-    // Send the "GET_OUT" request specifically to the kicked player
-    playerControls.room.sendToPeer("GET_OUT", kickOutId);
-
-    // Notify all other players of the updated player list
+    playerControls.sendRequest("GET_OUT", kickOutId);
     playerControls.sendPlayerDetails(joinedPlayers);
-
-    // Reset the kickOutId and hide the confirmation box
     kickOutId = null;
     hostKickoutMsg.classList.add("hide");
     playerExitMsg.classList.add("hide");
 });
-
-// kickYes.addEventListener("click", function () {
-//     removePlayer(kickOutId);
-//     delete joinedPlayers[kickOutId];
-//     playerControls.sendRequest("GET_OUT", kickOutId);
-//     playerControls.sendPlayerDetails(joinedPlayers);
-//     kickOutId = null;
-//     hostKickoutMsg.classList.add("hide");
-//     playerExitMsg.classList.add("hide");
-// });
 
 // if clicked on no then it just hide the message box
 const kickNo = document.getElementById("kickNo");
